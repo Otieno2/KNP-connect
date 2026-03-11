@@ -89,7 +89,7 @@ const Chat = () => {
 
       if (imageFile) {
         const ext = imageFile.name.split(".").pop();
-        const path = `chat/${id}/${Date.now()}.${ext}`;
+        const path = `${user!.id}/chat/${Date.now()}.${ext}`;
         const { error: uploadError } = await supabase.storage
           .from("media")
           .upload(path, imageFile);

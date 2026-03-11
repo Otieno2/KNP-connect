@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface Story {
@@ -32,21 +32,7 @@ const StoryViewer = ({ groups, initialGroupIndex, onClose }: StoryViewerProps) =
   const currentGroup = groups[groupIndex];
   const currentStory = currentGroup?.stories[storyIndex];
 
-  useEffect(() => {
-    setProgress(0);
-    const interval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          handleNext();
-          return 0;
-        }
-        return prev + 2;
-      });
-    }, 100);
-    return () => clearInterval(interval);
-  }, [groupIndex, storyIndex]);
-
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     if (storyIndex < (currentGroup?.stories.length || 0) - 1) {
       setStoryIndex((i) => i + 1);
     } else if (groupIndex < groups.length - 1) {
@@ -55,14 +41,33 @@ const StoryViewer = ({ groups, initialGroupIndex, onClose }: StoryViewerProps) =
     } else {
       onClose();
     }
-  };
+  }, [storyIndex, groupIndex, currentGroup?.stories.length, groups.length, onClose]);
+
+  const handleNextRef = useRef(handleNext);
+  useEffect(() => {
+    handleNextRef.current = handleNext;
+  }, [handleNext]);
+
+  useEffect(() => {
+    setProgress(0);
+    const interval = setInterval(() => {
+      setProgress((prev) => {
+        if (prev >= 100) {
+          handleNextRef.current();
+          return 0;
+        }
+        return prev + 2;
+      });
+    }, 100);
+    return () => clearInterval(interval);
+  }, [groupIndex, storyIndex]);
 
   const handlePrev = () => {
     if (storyIndex > 0) {
       setStoryIndex((i) => i - 1);
     } else if (groupIndex > 0) {
       setGroupIndex((i) => i - 1);
-      setStoryIndex(0);
+      setStoryIndex(groups[groupIndex - 1].stories.length - 1);
     }
   };
 
