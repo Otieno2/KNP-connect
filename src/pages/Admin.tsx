@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Navigate } from "react-router-dom";
 import { ArrowLeft, Users, FileText, Flag, Shield, Trash2, Ban, CheckCircle, XCircle } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -92,8 +92,7 @@ const Admin = () => {
   });
 
   if (!isAdmin) {
-    navigate("/");
-    return null;
+    return <Navigate to="/" replace />;
   }
 
   const tabs = [

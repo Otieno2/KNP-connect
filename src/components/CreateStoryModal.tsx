@@ -57,7 +57,7 @@ const CreateStoryModal = ({ open, onClose }: CreateStoryModalProps) => {
 
       if (imageFile) {
         const ext = imageFile.name.split(".").pop();
-        const path = `stories/${user!.id}/${Date.now()}.${ext}`;
+        const path = `${user!.id}/stories/${Date.now()}.${ext}`;
         const { error: uploadError } = await supabase.storage
           .from("media")
           .upload(path, imageFile);
